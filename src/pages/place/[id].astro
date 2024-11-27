@@ -7,18 +7,14 @@ import Stars from '../../components/Stars.astro';
 import { Image } from 'astro:assets';
 import Availability from '../../components/Availability.astro';
 
-interface PathItem {
-  params: { id: string | number };
-  props: { place: any };
-}
+export const getStaticPaths = (async () => {
+  const { data } = await actions.getPlaces();
 
-export const getStaticPaths = (async (): Promise<PathItem[]> => {
-  const { data, error } = await Astro.callAction(actions.getPlaces, {});
   if (!data) {
-    throw new Error('No data returned from getPlaces');
+    throw new Error('No data retured from getPlaces');
   }
 
-  return data.map((place: any) => ({
+  return data.map((place) => ({
     params: {
       id: place.id,
     },
