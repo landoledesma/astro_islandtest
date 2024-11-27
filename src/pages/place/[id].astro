@@ -3,18 +3,22 @@ import type { GetStaticPaths } from 'astro';
 import { actions } from 'astro:actions';
 
 import MainLayout from '../../layouts/MainLayout.astro';
-import Star from '../components/Star.astro';
+import Stars from '../../components/Stars.astro';
 import { Image } from 'astro:assets';
 import Availability from '../../components/Availability.astro';
 
-export const getStaticPaths = (async () => {
-  const { data } = await actions.getPlaces();
+interface PathItem {
+  params: { id: string | number };
+  props: { place: any };
+}
 
+export const getStaticPaths = (async (): Promise<PathItem[]> => {
+  const { data, error } = await Astro.callAction(actions.getPlaces, {});
   if (!data) {
-    throw new Error('No data retured from getPlaces');
+    throw new Error('No data returned from getPlaces');
   }
 
-  return data.map((place) => ({
+  return data.map((place: any) => ({
     params: {
       id: place.id,
     },
@@ -37,7 +41,7 @@ const imageUrl = `/assets/images/${place.image}`;
       <p>{place.description}</p>
 
       <div class="flex flex-1">
-        {Array.from({ length: Number(place.avg_rating) }).map((_) => <Star />)}
+        {Array.from({ length: Number(place.avg_rating) }).map((_) => <Stars />)}
       </div>
 
       <!-- TODO: Server Island -->
